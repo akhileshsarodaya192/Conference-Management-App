@@ -1,0 +1,136 @@
+<template>
+    <lightning-card title="Speaker Details & Availability" icon-name="standard:people">
+        <div class="slds-p-around_medium">
+    
+            <template if:false={selectedSpeaker}>
+                <div class="slds-align_absolute-center slds-text-color_weak slds-p-vertical_large">
+                    <lightning-icon size="large" class="slds-m-bottom_small"></lightning-icon>
+                    <h3 class="slds-text-heading_medium">Select a Speaker</h3>
+                </div>
+                <div class="slds-align_absolute-center slds-p-vertical_large">  
+                    <h3 class="slds-m-top_small slds-text-heading_medium">Click "Book Session" on a speaker from the left section</h3>
+                </div>
+            </template>
+
+            <template if:true={selectedSpeaker}>
+                
+                <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_9-of-12">
+                            <h2 class="slds-text-heading_small slds-truncate" title={selectedSpeaker.Name}>
+                                {selectedSpeaker.Name}
+                            </h2>
+                            <p class="slds-m-bottom_xx-small">
+                                <strong>Speciality:</strong> {selectedSpeaker.Speciality__c}
+                            </p>
+                            <p class="slds-text-body_small slds-line-height_reset">
+                                <strong>Bio:</strong> {selectedSpeaker.Bio__c}
+                            </p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-align_absolute-center slds-align_absolute-center_vertical">
+                            <lightning-button 
+                                label="Clear Selection" 
+                                onclick={clearSelection}
+                                variant="destructive-text"
+                                class="slds-float_right">
+                            </lightning-button>
+                        </div>
+                    </div>
+                </div>
+
+                <lightning-input
+                type="date"
+                label="Select Future Date Only"
+                value={selectedDate}
+                min={minDate}
+                onchange={handleDateChange}
+                class="slds-m-bottom_medium">
+                
+                    <div slot="help">
+                        <lightning-icon icon-name="utility:warning" size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+                        Future dates only (after {todayDisplay})
+                    </div>
+                </lightning-input>
+
+                <!-- Availability Status -->
+        <template if:true={selectedDate}>
+            
+                    <template if:true={isOldDate}>
+                    <div class="slds-notify slds-notify_alert slds-theme_error slds-m-bottom_medium">
+                        <span class="slds-assistive-text">Error</span>
+                        <h2>You Selected a Past Date! Please select a current or future date.</h2>
+                    </div>
+                    </template>
+
+                <template if:false={isOldDate}>
+                        <template if:true={checkingAvailability}>
+                            <div class="slds-align_absolute-center slds-p-vertical_medium">
+                                <lightning-spinner size="small" alternative-text="Checking availability..."></lightning-spinner>
+                                <p class="slds-m-top_small slds-text-color_weak">Checking speaker availability...</p>
+                            </div>
+                        </template>
+        
+                        <template if:false={checkingAvailability}>
+                            
+                            <template if:true={isAvailable}>
+                                <div class="slds-notify slds-notify_alert slds-theme_success slds-m-bottom_medium">
+                                    <span class="slds-assistive-text">Success</span>
+                                    <h2>Slot is Available! This date slot is free for booking.</h2>
+                                </div>
+                            </template>
+            
+                                <template if:false={isAvailable}>
+                                    <div class="slds-notify slds-notify_alert slds-theme_error slds-m-bottom_medium">
+                                        <span class="slds-assistive-text">Error</span>
+                                        <h2>Slot is Already booked! Please select another date.</h2>
+                                    </div>
+                                </template>
+                    </template>
+            </template>
+        </template>
+
+                <!-- Create Assignment Button -->
+                <lightning-button
+                    variant="brand"
+                    label="Create Assignment"
+                    onclick={handleCreateAssignment}
+                    disabled={isCreateButtonDisabled}
+                    class="slds-m-bottom_medium">
+                </lightning-button>
+
+                <!-- Bonus: Calendar View -->
+                <div class="slds-box slds-theme_shade slds-m-top_large">
+                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                        <h3 class="slds-text-heading_small">📅 Next 7 Days Availability</h3>
+                        <lightning-button
+                            label="Refresh Calendar"
+                            variant="neutral"
+                            onclick={refreshCalendar}
+                            size="small">
+                        </lightning-button>
+                    </div>
+                    <template if:true={calendarLoading}>
+                        <div class="slds-align_absolute-center slds-p-vertical_medium">
+                            <lightning-spinner size="small"></lightning-spinner>
+                        </div>
+                    </template>
+                    <template if:false={calendarLoading}>
+                        <div class="slds-grid slds-wrap slds-gutters_x-small">
+                            <template for:each={calendarDays} for:item="day">
+                                <div key={day.date} class={day.wrapperClass}>
+                                    <div class={day.tileClass} onclick={day.clickHandler}>
+                                        <div class="date-display">
+                                            <strong>{day.dayLabel} </strong>
+                                            <span class="date-number">{day.dateNumber}</span>
+                                        </div>
+                                        <div class={day.statusClass}>{day.status}</div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,14 @@
+<template>
+
+        <div class="slds-m-around_medium">
+
+                <lightning-datatable
+                key-field="Id"
+                data={speakers}
+                columns={columns}
+                onrowaction={handleBookSession}>
+                </lightning-datatable>
+
+        </div>
+
+</template>

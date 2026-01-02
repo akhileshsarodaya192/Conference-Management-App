@@ -1,0 +1,29 @@
+<template>
+    <div class="container">
+        <lightning-card title="Search Speaker" icon-name="custom:custom14">
+            <div class="slds-m-around_medium">
+
+                <lightning-input label="Search Speaker" 
+                                value={name} 
+                                placeholder="Enter Speaker Name"
+                                onchange={handleNameSearch}>
+                </lightning-input>
+
+                <lightning-combobox label="Search Speciality" 
+                                    value={speciality} 
+                                    placeholder="Select Speciality" 
+                                    options={specialityOptions} 
+                                    onchange={handleSpecialitySearch}
+                                    required="true">
+                </lightning-combobox>
+                
+                <div class="slds-m-top_x-small slds-p-top_medium">
+                <lightning-button label="Search" variant="brand" onclick={handleSearch}></lightning-button>
+                </div>
+            </div>
+
+                <c-speaker-list speakers={speakers}></c-speaker-list>
+            
+        </lightning-card>
+        </div>
+</template>
